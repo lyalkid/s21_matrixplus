@@ -12,6 +12,11 @@
 *.map
 *.exp
 
+.idea
+.vscode
+cmake-build-debug
+build/
+
 # Precompiled Headers
 *.gch
 *.pch
