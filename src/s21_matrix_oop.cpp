@@ -29,7 +29,7 @@ double S21Matrix::getElement(int row, int col) const {
 void S21Matrix::setElement(int row, int col, double value) {
   if (row >= 0 && row < rows_ && col >= 0 && col < cols_) {
     matrix_[row][col] = value;
-  } else {
+  } else if(row >= rows_ || col >= cols_) {
     throw std::out_of_range("Index out of range");
   }
 }
@@ -135,4 +135,89 @@ void S21Matrix::MulMatrix(const S21Matrix& other) {
       }
     }
   }
+}
+
+S21Matrix S21Matrix::Transpose(){
+    S21Matrix other = S21Matrix(rows_, cols_);
+    for(int i = 0; i < rows_; i ++ ){
+        for(int j = 0; j < cols_; j ++){
+            other.matrix_[i][j] = matrix_[j][i];
+        }
+    }
+    return other;
+}
+
+void S21Matrix::out_matrix(){
+    for(int i = 0; i < rows_; i ++){
+        for(int j = 0; j< cols_; j++){
+            printf("%lf ", matrix_[i][j]);
+        }
+        printf("\n");
+    }
+
+}
+
+S21Matrix S21Matrix::CalcComplements(){
+    if(rows_ != cols_){
+        throw std::invalid_argument("Matrix is not square");
+    }
+    
+
+}
+
+//
+//S21Matrix S21Matrix::get_minor(S21Matrix A, int i, int j) {
+//    int scale = A.rows_;
+//  S21Matrix b;
+//    if (A.rows_ > 1) {
+//        scale = A.rows_ - 1;
+//        int m = 0, n = 0;  // счетчики для минора
+//        b = S21Matrix(scale, scale);
+//        for (int k = 0; k < A.rows_; k++) {
+//            if (k == i) {
+//                continue;
+//            }
+//            n = 0;
+//            for (int g = 0; g < A.columns; g++) {
+//                if (g == j) {
+//                    continue;
+//                }
+//                double tmp = A.matrix[k][g];
+//                b.matrix[m][n] = tmp;
+//                n++;
+//            }
+//            //    if (m < scale)
+//            m++;
+//        }
+//    } else {
+//        s21_create_matrix(1, 1, &b);
+//        int sign = (i + j + 2) % 2 == 0 ? 1 : -1;
+//        b.matrix[0][0] = 1 * sign;
+//    }
+//    return b;
+//};
+
+
+
+S21Matrix& S21Matrix::operator=(const S21Matrix& other){
+  if(this != &other){
+    this->~S21Matrix();
+    rows_ = other.rows_;
+    cols_ = other.cols_;
+
+    matrix_ = new double*[rows_];
+  }
+}
+
+int main(){
+    int count = 0;
+    S21Matrix matrix = S21Matrix();
+    for(int i = 0; i < matrix.getRows(); i ++){
+        for(int j = 0; j < matrix.getCols(); j++){
+            matrix.setElement(i, j, count++);
+        }
+    }
+    matrix.out_matrix();
+    S21Matrix tr = matrix.Transpose();
+    tr.out_matrix();
 }

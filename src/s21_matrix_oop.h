@@ -1,7 +1,7 @@
 #ifndef S21_MATRIX_OOP_H
 #define S21_MATRIX_OOP_H
 #include <iostream>
-
+#include <math.h>
 class S21Matrix {
  private:
   int rows_, cols_;
@@ -25,16 +25,26 @@ class S21Matrix {
   S21Matrix(S21Matrix&& other);
   ~S21Matrix();
 
-  bool EqMatrix(const S21Matrix& other);
 
+  // Math
+  bool EqMatrix(const S21Matrix& other);
   void SumMatrix(const S21Matrix& other);
   void SubMatrix(const S21Matrix& other);
   void MulNumber(const double num);
   void MulMatrix(const S21Matrix& other);
+
+  // Matrix operations
   S21Matrix Transpose();
   S21Matrix CalcComplements();
   double Determinant();
   S21Matrix InverseMatrix();
+
+
+  // operators
+  S21Matrix& operator=(const S21Matrix& other);
+
+  void out_matrix();
+  S21Matrix get_minor(S21Matrix A, int i, int j);
 };
 
 #endif  // S21_MATRIX_OOP_H
