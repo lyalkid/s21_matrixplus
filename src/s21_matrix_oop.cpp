@@ -90,4 +90,49 @@ bool S21Matrix::EqMatrix(const S21Matrix& other) {
   return true;
 }
 
-void S21Matrix::SumMatrix(const S21Matrix& other) {}
+void S21Matrix::SumMatrix(const S21Matrix& other) {
+  if (rows_ == other.rows_ && cols_ == other.cols_) {
+    for (int i = 0; i < rows_; i++) {
+      for (int j = 0; j < cols_; j++) {
+        matrix_[i][j] += other.matrix_[i][j];
+      }
+    }
+  } else {
+    throw std::runtime_error("smth wrong brooo");
+  }
+}
+
+void S21Matrix::SubMatrix(const S21Matrix& other) {
+  if (rows_ == other.rows_ && cols_ == other.cols_) {
+    for (int i = 0; i < rows_; i++) {
+      for (int j = 0; j < cols_; j++) {
+        matrix_[i][j] -= other.matrix_[i][j];
+      }
+    }
+  } else {
+    throw std::runtime_error("smth wrong brooo");
+  }
+}
+
+void S21Matrix::MulNumber(const double num) {
+  if (!matrix_) {
+    throw std::runtime_error("matrix is Null");
+  }
+  for (int i = 0; i < rows_; i++) {
+    for (int j = 0; j < cols_; j++) {
+      matrix_[i][j] *= num;
+    }
+  }
+}
+
+void S21Matrix::MulMatrix(const S21Matrix& other) {
+  if (cols_ != other.rows_) {
+    throw std::logic_error("smth wrong");
+  } else {
+    for (int i = 0; i < rows_; i++) {
+      for (int j = 0; j < cols_; j++) {
+        matrix_[i][j] *= other.matrix_[i][j];
+      }
+    }
+  }
+}
