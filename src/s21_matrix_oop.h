@@ -1,7 +1,8 @@
 #ifndef S21_MATRIX_OOP_H
 #define S21_MATRIX_OOP_H
-#include <iostream>
 #include <math.h>
+
+#include <iostream>
 class S21Matrix {
  private:
   int rows_, cols_;
@@ -25,7 +26,6 @@ class S21Matrix {
   S21Matrix(S21Matrix&& other);
   ~S21Matrix();
 
-
   // Math
   bool EqMatrix(const S21Matrix& other);
   void SumMatrix(const S21Matrix& other);
@@ -39,9 +39,18 @@ class S21Matrix {
   double Determinant();
   S21Matrix InverseMatrix();
 
-
   // operators
+  S21Matrix operator+(const S21Matrix& other);
+  S21Matrix operator-(const S21Matrix& other);
+  S21Matrix operator*(const double num);
+  S21Matrix operator*(const S21Matrix& other);
+  bool operator==(const S21Matrix& other) const noexcept;
   S21Matrix& operator=(const S21Matrix& other);
+  S21Matrix& operator+=(const S21Matrix& other);
+  S21Matrix& operator-=(const S21Matrix& other);
+  S21Matrix& operator*=(const S21Matrix& other);
+  S21Matrix& operator*=(const double num);
+  double& operator()(int i, int j);
 
   void out_matrix();
   S21Matrix get_minor(S21Matrix A, int i, int j);
