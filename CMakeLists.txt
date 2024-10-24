@@ -9,4 +9,5 @@ include_directories(src)
 add_executable(CPP1_s21_matrixplus_1
 
         src/s21_matrix_oop.cpp
-        src/s21_matrix_oop.h)
+        src/s21_matrix_oop.h
+        )
