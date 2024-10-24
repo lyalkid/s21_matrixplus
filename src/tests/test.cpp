@@ -4,8 +4,8 @@
 
 TEST(test_class, basic_constructor) {
   S21Matrix m;
-  EXPECT_EQ(m.getCols(), 1);
-  EXPECT_EQ(m.getRows(), 1);
+  EXPECT_EQ(m.getCols(), 3);
+  EXPECT_EQ(m.getRows(), 3);
 }
 
 TEST(test_class, rc_constructor) {
@@ -57,9 +57,9 @@ TEST(test_class, square_brackets_operator) {
 TEST(test_setters, set_rows_up) {
   S21Matrix m(2, 2);
   m[1][1] = 6.9;
-
   m.setRows(5);
   EXPECT_EQ(m.getRows(), 5);
+
   EXPECT_EQ(m[1][1], 6.9);
 }
 
@@ -166,7 +166,7 @@ TEST(test_functional, add_operator_overload) {
   m(1, 1) = 1;
   n(1, 1) = 1;
 
-  m = (m + n);  //
+  m = (m + n);
 
   EXPECT_EQ(m(0, 0), 2);
   EXPECT_EQ(m(1, 1), 2);
@@ -407,6 +407,7 @@ TEST(test_functional, determinant_5x5) {
   m[4][4] = -2;
 
   double res = m.Determinant();
+
   ASSERT_NEAR(res, 2480, 1e-6);
 }
 
@@ -672,8 +673,632 @@ TEST(test_functional, brackets_const) {
   const S21Matrix m(3, 3);
   ASSERT_EQ(m(0, 0), 0);
 }
+TEST(S21MatrixTest, S21CalcCompTest1) {
+  S21Matrix matrix(3, 3);
+  S21Matrix result(3, 3);
+  S21Matrix exp(3, 3);
 
+  matrix.setElement(0, 0, 1);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(0, 2, 3);
+  matrix.setElement(1, 0, 0);
+  matrix.setElement(1, 1, 4);
+  matrix.setElement(1, 2, 2);
+  matrix.setElement(2, 0, 5);
+  matrix.setElement(2, 1, 2);
+  matrix.setElement(2, 2, 1);
 
+  exp.setElement(0, 0, 0);
+  exp.setElement(0, 1, 10);
+  exp.setElement(0, 2, -20);
+  exp.setElement(1, 0, 4);
+  exp.setElement(1, 1, -14);
+  exp.setElement(1, 2, 8);
+  exp.setElement(2, 0, -8);
+  exp.setElement(2, 1, -2);
+  exp.setElement(2, 2, 4);
+
+  result = matrix.CalcComplements();
+  EXPECT_TRUE(result.EqMatrix(exp));
+}
+
+TEST(S21MatrixTest, S21CalcCompTest2) {
+  S21Matrix matrix(1, 1);
+  S21Matrix result(1, 1);
+  S21Matrix exp(1, 1);
+
+  matrix.setElement(0, 0, 21);
+  exp.setElement(0, 0, 1);
+
+  result = matrix.CalcComplements();
+
+  EXPECT_TRUE(result.EqMatrix(exp));
+}
+
+TEST(S21MatrixTest, S21CalcCompErrorTest1) {
+  S21Matrix matrix(2, 1);
+  EXPECT_THROW(matrix.CalcComplements(), std::logic_error);
+}
+
+TEST(S21MatrixTest, ConstructDefTest) {
+  S21Matrix matrix;
+
+  EXPECT_EQ(matrix.getRows(), 3);
+  EXPECT_EQ(matrix.getCols(), 3);
+}
+
+TEST(S21MatrixTest, ConstructErrorTest1) {
+  EXPECT_THROW(S21Matrix matrix(-2, -4), std::logic_error);
+}
+
+TEST(S21MatrixTest, MoveConstructTest) {
+  S21Matrix matrix(2, 2);
+
+  matrix.setElement(0, 0, 5);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, -7);
+  matrix.setElement(1, 1, 4);
+
+  S21Matrix tmp(matrix);
+  S21Matrix matrix_1(std::move(matrix));
+
+  EXPECT_TRUE(tmp.EqMatrix(matrix_1));
+
+  EXPECT_EQ(matrix.getCols(), 0);
+  EXPECT_EQ(matrix.getRows(), 0);
+}
+
+TEST(S21MatrixTest, DeterTest1) {  // 2 перестановки
+  S21Matrix matrix(3, 3);
+  double exp_res = 14.0;
+
+  matrix.setElement(0, 0, 0);
+  matrix.setElement(0, 1, 0);
+  matrix.setElement(0, 2, 2);
+  matrix.setElement(1, 0, 3);
+  matrix.setElement(1, 1, 5);
+  matrix.setElement(1, 2, 1);
+  matrix.setElement(2, 0, 1);
+  matrix.setElement(2, 1, 4);
+  matrix.setElement(2, 2, 2);
+
+  EXPECT_DOUBLE_EQ(matrix.Determinant(), exp_res);
+}
+
+TEST(S21MatrixTest, DeterTest2) {
+  S21Matrix matrix(3, 3);
+  double exp_res = -156.0;
+
+  matrix.setElement(0, 0, 0);
+  matrix.setElement(0, 1, 1);
+  matrix.setElement(0, 2, -2);
+  matrix.setElement(1, 0, 7);
+  matrix.setElement(1, 1, -5);
+  matrix.setElement(1, 2, 1);
+  matrix.setElement(2, 0, 1);
+  matrix.setElement(2, 1, 8);
+  matrix.setElement(2, 2, 5);
+
+  EXPECT_DOUBLE_EQ(matrix.Determinant(), exp_res);
+}
+
+TEST(S21MatrixTest, DeterTest3) {
+  S21Matrix matrix(3, 3);
+  double exp_res = 0.0;
+
+  matrix.setElement(0, 0, 2);
+  matrix.setElement(0, 1, 6);
+  matrix.setElement(1, 0, 1);
+  matrix.setElement(1, 0, 3);
+
+  EXPECT_DOUBLE_EQ(matrix.Determinant(), exp_res);
+}
+
+TEST(S21Matrix, DeterErrorTest1) {
+  S21Matrix matrix(2, 1);
+
+  EXPECT_THROW(matrix.Determinant(), std::logic_error);
+}
+
+TEST(S21MatrixTest, EqTest1) {
+  S21Matrix matrix(2, 2);
+  S21Matrix matrix_2(2, 2);
+
+  matrix.setElement(0, 0, 1);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 3);
+  matrix.setElement(1, 1, 4);
+
+  matrix_2.setElement(0, 0, 1);
+  matrix_2.setElement(0, 1, 2);
+  matrix_2.setElement(1, 0, 3);
+  matrix_2.setElement(1, 1, 4);
+
+  EXPECT_TRUE(matrix.EqMatrix(matrix_2));
+}
+
+TEST(S21MatrixTest, EqTest2) {
+  S21Matrix matrix(2, 2);
+  S21Matrix matrix_2(2, 2);
+
+  matrix.setElement(0, 0, 1);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 3);
+  matrix.setElement(1, 1, 4);
+
+  matrix_2.setElement(0, 0, 5);
+  matrix_2.setElement(0, 1, 6);
+  matrix_2.setElement(1, 0, 7);
+  matrix_2.setElement(1, 1, 8);
+
+  EXPECT_FALSE(matrix.EqMatrix(matrix_2));
+}
+
+TEST(S21MatrixTest, EqErrorTest) {
+  S21Matrix matrix(2, 2);
+  S21Matrix matrix_2(1, 1);
+
+  EXPECT_FALSE(matrix.EqMatrix(matrix_2));
+}
+
+TEST(S21MatrixTest, GetterTest1) {
+  S21Matrix matrix(2, 2);
+
+  EXPECT_EQ(matrix.getCols(), 2);
+  EXPECT_EQ(matrix.getRows(), 2);
+}
+
+TEST(S21Matrix, SetColsTest1) {
+  S21Matrix matrix(2, 2);
+
+  matrix.setCols(3);
+  EXPECT_EQ(matrix.getCols(), 3);
+}
+
+TEST(S21Matrix, SetColsErrorTest1) {
+  S21Matrix matrix(2, 2);
+
+  EXPECT_THROW(matrix.setCols(-3), std::logic_error);
+}
+
+TEST(S21Matrix, SetRowsTest1) {
+  S21Matrix matrix(2, 2);
+
+  matrix.setRows(3);
+  EXPECT_EQ(matrix.getRows(), 3);
+}
+
+TEST(S21Matrix, SetRowsErrorTest1) {
+  S21Matrix matrix(2, 2);
+
+  EXPECT_THROW(matrix.setRows(-3), std::logic_error);
+}
+
+TEST(S21MatrixTest, InverseTest1) {
+  S21Matrix matrix(3, 3);
+  S21Matrix res_mat(3, 3);
+  S21Matrix exp_mat(3, 3);
+
+  matrix.setElement(0, 0, 2);
+  matrix.setElement(0, 1, 5);
+  matrix.setElement(0, 2, 7);
+  matrix.setElement(1, 0, 6);
+  matrix.setElement(1, 1, 3);
+  matrix.setElement(1, 2, 4);
+  matrix.setElement(2, 0, 5);
+  matrix.setElement(2, 1, -2);
+  matrix.setElement(2, 2, -3);
+
+  exp_mat.setElement(0, 0, 1);
+  exp_mat.setElement(0, 1, -1);
+  exp_mat.setElement(0, 2, 1);
+  exp_mat.setElement(1, 0, -38);
+  exp_mat.setElement(1, 1, 41);
+  exp_mat.setElement(1, 2, -34);
+  exp_mat.setElement(2, 0, 27);
+  exp_mat.setElement(2, 1, -29);
+  exp_mat.setElement(2, 2, 24);
+
+  res_mat = matrix.InverseMatrix();
+  EXPECT_TRUE(res_mat.EqMatrix(exp_mat));
+}
+
+TEST(S21MatrixTest, InverseErrorTest1) {
+  S21Matrix matrix(2, 2);
+
+  matrix.setElement(0, 0, 2);
+  matrix.setElement(0, 1, 6);
+  matrix.setElement(1, 0, 1);
+  matrix.setElement(1, 1, 3);
+
+  EXPECT_THROW(matrix.InverseMatrix(), std::logic_error);
+}
+
+TEST(S21MatrixTest, InverseErrorTest2) {
+  S21Matrix matrix(2, 3);
+
+  EXPECT_THROW(matrix.InverseMatrix(), std::logic_error);
+}
+
+TEST(S21MatrixTest, MultMatrixTest1) {
+  S21Matrix matrix(1, 2);
+  S21Matrix matrix_2(2, 1);
+  S21Matrix exp(1, 1);
+
+  matrix.setElement(0, 0, 5);
+  matrix.setElement(0, 1, 7);
+
+  matrix_2.setElement(0, 0, 1);
+  matrix_2.setElement(1, 0, 3);
+
+  exp.setElement(0, 0, 26);
+
+  matrix.MulMatrix(matrix_2);
+  EXPECT_TRUE(matrix.EqMatrix(exp));
+}
+
+TEST(S21MatrixTest, MultMatrixErrorTest1) {
+  S21Matrix matrix(2, 2);
+  S21Matrix matrix_2(4, 3);
+
+  EXPECT_THROW(matrix.MulMatrix(matrix_2), std::logic_error);
+}
+
+TEST(S21Matrix, S21MulNumberTest1) {
+  S21Matrix matrix(2, 2);
+  S21Matrix exp(2, 2);
+  double value = -2;
+
+  matrix.setElement(0, 0, -5);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, -7);
+  matrix.setElement(1, 1, 4);
+
+  exp.setElement(0, 0, 10);
+  exp.setElement(0, 1, -4);
+  exp.setElement(1, 0, 14);
+  exp.setElement(1, 1, -8);
+
+  matrix.MulNumber(value);
+  EXPECT_TRUE(matrix.EqMatrix(exp));
+}
+
+TEST(S21OperatorTest, AddOperatorTest1) {
+  S21Matrix matrix(2, 2);
+  matrix.setElement(0, 0, 5);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, -7);
+  matrix.setElement(1, 1, 4);
+
+  S21Matrix matrix_2(2, 2);
+  matrix_2.setElement(0, 0, -1);
+  matrix_2.setElement(0, 1, 6);
+  matrix_2.setElement(1, 0, 2);
+  matrix_2.setElement(1, 1, 10);
+
+  S21Matrix exp(2, 2);
+  exp.setElement(0, 0, 4);
+  exp.setElement(0, 1, 8);
+  exp.setElement(1, 0, -5);
+  exp.setElement(1, 1, 14);
+
+  S21Matrix result = matrix + matrix_2;
+  EXPECT_TRUE(exp.EqMatrix(result));
+}
+
+TEST(S21OperatorTest, AddOperatorErrorTest1) {
+  S21Matrix matrix(1, 1);
+  matrix.setElement(0, 0, 5);
+
+  S21Matrix matrix_2(2, 1);
+  matrix_2.setElement(0, 0, 1);
+  matrix_2.setElement(1, 0, 2);
+
+  EXPECT_THROW(matrix + matrix_2, std::runtime_error);
+}
+
+TEST(S21OperatorTest, Add_EqOperatorTest1) {
+  S21Matrix matrix(2, 2);
+  matrix.setElement(0, 0, 5);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, -7);
+  matrix.setElement(1, 1, 4);
+
+  S21Matrix matrix_2(2, 2);
+  matrix_2.setElement(0, 0, -1);
+  matrix_2.setElement(0, 1, 6);
+  matrix_2.setElement(1, 0, 2);
+  matrix_2.setElement(1, 1, 10);
+
+  S21Matrix exp(2, 2);
+  exp.setElement(0, 0, 4);
+  exp.setElement(0, 1, 8);
+  exp.setElement(1, 0, -5);
+  exp.setElement(1, 1, 14);
+
+  matrix += matrix_2;
+  EXPECT_TRUE(exp.EqMatrix(matrix));
+}
+
+TEST(S21OperatorTest, Add_EqOperatorErrorTest1) {
+  S21Matrix matrix(1, 1);
+  matrix.setElement(0, 0, 5);
+
+  S21Matrix matrix_2(2, 1);
+  matrix_2.setElement(0, 0, 1);
+  matrix_2.setElement(1, 0, 2);
+
+  EXPECT_THROW(matrix += matrix_2, std::runtime_error);
+}
+
+TEST(S21OperatorTest, SubOperatorTest1) {
+  S21Matrix matrix(2, 2);
+  matrix.setElement(0, 0, 5);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 7);
+  matrix.setElement(1, 1, 4);
+
+  S21Matrix matrix_2(2, 2);
+  matrix_2.setElement(0, 0, 1);
+  matrix_2.setElement(0, 1, 6);
+  matrix_2.setElement(1, 0, 2);
+  matrix_2.setElement(1, 1, 10);
+
+  S21Matrix exp(2, 2);
+  exp.setElement(0, 0, 4);
+  exp.setElement(0, 1, -4);
+  exp.setElement(1, 0, 5);
+  exp.setElement(1, 1, -6);
+
+  S21Matrix result = matrix - matrix_2;
+  EXPECT_TRUE(result.EqMatrix(exp));
+}
+
+TEST(S21OperatorTest, SubOperatorErrorTest1) {
+  S21Matrix matrix(2, 2);
+  S21Matrix matrix_2(1, 1);
+
+  matrix.setElement(0, 0, 1);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 3);
+  matrix.setElement(1, 1, 4);
+
+  matrix_2.setElement(0, 0, 1);
+
+  EXPECT_THROW(matrix - matrix_2, std::runtime_error);
+}
+
+TEST(S21OperatorTest, Sub_EqOperatorTest1) {
+  S21Matrix matrix(2, 2);
+  matrix.setElement(0, 0, 5);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 7);
+  matrix.setElement(1, 1, 4);
+
+  S21Matrix matrix_2(2, 2);
+  matrix_2.setElement(0, 0, 1);
+  matrix_2.setElement(0, 1, 6);
+  matrix_2.setElement(1, 0, 2);
+  matrix_2.setElement(1, 1, 10);
+
+  S21Matrix exp(2, 2);
+  exp.setElement(0, 0, 4);
+  exp.setElement(0, 1, -4);
+  exp.setElement(1, 0, 5);
+  exp.setElement(1, 1, -6);
+
+  matrix -= matrix_2;
+  EXPECT_TRUE(matrix.EqMatrix(exp));
+}
+
+TEST(S21OperatorTest, Sub_EqOperatorErrorTest1) {
+  S21Matrix matrix(2, 2);
+  S21Matrix matrix_2(1, 1);
+
+  matrix.setElement(0, 0, 1);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 3);
+  matrix.setElement(1, 1, 4);
+
+  matrix_2.setElement(0, 0, 1);
+
+  EXPECT_THROW(matrix -= matrix_2, std::runtime_error);
+}
+
+TEST(S21OperatorTest, MultOperatorTest1) {
+  S21Matrix matrix(1, 2);
+  S21Matrix matrix_2(2, 1);
+  S21Matrix exp(1, 1);
+
+  matrix.setElement(0, 0, 5);
+  matrix.setElement(0, 1, 7);
+
+  matrix_2.setElement(0, 0, 1);
+  matrix_2.setElement(1, 0, 3);
+
+  exp.setElement(0, 0, 26);
+
+  S21Matrix result = matrix * matrix_2;
+  EXPECT_TRUE(result.EqMatrix(exp));
+}
+
+TEST(S21OperatorTest, MultOperatorErrorTest1) {
+  S21Matrix matrix(2, 2);
+  S21Matrix matrix_2(4, 3);
+
+  EXPECT_THROW(matrix * matrix_2, std::logic_error);
+}
+
+TEST(S21OperatorTest, Mult_EqOperatorTest1) {
+  S21Matrix matrix(1, 2);
+  S21Matrix matrix_2(2, 1);
+  S21Matrix exp(1, 1);
+
+  matrix.setElement(0, 0, 5);
+  matrix.setElement(0, 1, 7);
+
+  matrix_2.setElement(0, 0, 1);
+  matrix_2.setElement(1, 0, 3);
+
+  exp.setElement(0, 0, 26);
+
+  matrix *= matrix_2;
+  EXPECT_TRUE(matrix.EqMatrix(exp));
+}
+
+TEST(S21OperatorTest, Mult_EqOperatorErrorTest1) {
+  S21Matrix matrix(2, 2);
+  S21Matrix matrix_2(4, 3);
+
+  EXPECT_THROW(matrix *= matrix_2, std::logic_error);
+}
+
+TEST(S21OperatorTest, EqualOperatorTest1) {
+  S21Matrix matrix(2, 2);
+  S21Matrix matrix_2(2, 2);
+
+  matrix.setElement(0, 0, 1);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 3);
+  matrix.setElement(1, 1, 4);
+
+  matrix_2.setElement(0, 0, 1);
+  matrix_2.setElement(0, 1, 2);
+  matrix_2.setElement(1, 0, 3);
+  matrix_2.setElement(1, 1, 4);
+
+  EXPECT_TRUE(matrix == matrix_2);
+}
+
+TEST(S21OperatorTest, EqualOperatorTest2) {
+  S21Matrix matrix(2, 2);
+  S21Matrix matrix_2(2, 2);
+
+  matrix.setElement(0, 0, 1);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 3);
+  matrix.setElement(1, 1, 4);
+
+  matrix_2.setElement(0, 0, 5);
+  matrix_2.setElement(0, 1, 6);
+  matrix_2.setElement(1, 0, 7);
+  matrix_2.setElement(1, 1, 8);
+
+  EXPECT_FALSE(matrix == matrix_2);
+}
+
+TEST(S21OperatorTest, EqualOperatorErrorTest2) {
+  S21Matrix matrix(2, 2);
+  S21Matrix matrix_2(1, 1);
+
+  EXPECT_FALSE(matrix == matrix_2);
+}
+
+TEST(S21OperatorTest, AssignOperatorTest1) {
+  S21Matrix matrix(2, 2);
+
+  matrix.setElement(0, 0, 1);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 3);
+  matrix.setElement(1, 1, 4);
+
+  S21Matrix matrix_1(2, 2);
+  matrix_1 = matrix;
+  EXPECT_TRUE(matrix_1.EqMatrix(matrix));
+}
+
+TEST(S21OperatorTest, IndexOperatorTest1) {
+  S21Matrix matrix(2, 2);
+
+  matrix.setElement(0, 0, 1);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 3);
+  matrix.setElement(1, 1, 4);
+
+  EXPECT_EQ(matrix(1, 1), 4);
+}
+
+TEST(S21OperatorTest, IndexOperatorErrorTest1) {
+  S21Matrix matrix(2, 2);
+
+  matrix.setElement(0, 0, 1);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 3);
+  matrix.setElement(1, 1, 4);
+
+  EXPECT_THROW(matrix(4, 4), std::logic_error);
+}
+
+TEST(S21MatrixTest, SubMatrixTest) {
+  S21Matrix matrix(2, 2);
+  matrix.setElement(0, 0, 5);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 7);
+  matrix.setElement(1, 1, 4);
+
+  S21Matrix matrix_2(2, 2);
+  matrix_2.setElement(0, 0, 1);
+  matrix_2.setElement(0, 1, 6);
+  matrix_2.setElement(1, 0, 2);
+  matrix_2.setElement(1, 1, 10);
+
+  S21Matrix result(2, 2);
+  result.setElement(0, 0, 4);
+  result.setElement(0, 1, -4);
+  result.setElement(1, 0, 5);
+  result.setElement(1, 1, -6);
+
+  matrix.SubMatrix(matrix_2);
+  EXPECT_TRUE(matrix.EqMatrix(result));
+}
+
+TEST(S21MatrixTest, SubMatrixErrorTest1) {
+  S21Matrix matrix(2, 2);
+  S21Matrix matrix_2(1, 1);
+
+  matrix.setElement(0, 0, 1);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, 3);
+  matrix.setElement(1, 1, 4);
+
+  matrix_2.setElement(0, 0, 1);
+
+  EXPECT_THROW(matrix.SubMatrix(matrix_2), std::runtime_error);
+}
+
+TEST(S21MatrixTest, SumMatrixTest1) {
+  S21Matrix matrix(2, 2);
+  matrix.setElement(0, 0, 5);
+  matrix.setElement(0, 1, 2);
+  matrix.setElement(1, 0, -7);
+  matrix.setElement(1, 1, 4);
+
+  S21Matrix matrix_2(2, 2);
+  matrix_2.setElement(0, 0, -1);
+  matrix_2.setElement(0, 1, 6);
+  matrix_2.setElement(1, 0, 2);
+  matrix_2.setElement(1, 1, 10);
+
+  S21Matrix result(2, 2);
+  result.setElement(0, 0, 4);
+  result.setElement(0, 1, 8);
+  result.setElement(1, 0, -5);
+  result.setElement(1, 1, 14);
+
+  matrix.SumMatrix(matrix_2);
+  EXPECT_TRUE(matrix.EqMatrix(result));
+}
+
+TEST(S21MatrixTest, SumMatrixErrorTest1) {
+  S21Matrix matrix(1, 1);
+  matrix.setElement(0, 0, 5);
+
+  S21Matrix matrix_2(2, 1);
+  matrix_2.setElement(0, 0, 1);
+  matrix_2.setElement(1, 0, 2);
+
+  EXPECT_THROW(matrix.SumMatrix(matrix_2), std::runtime_error);
+}
 
 int main(int argc, char* argv[]) {
   ::testing::InitGoogleTest(&argc, argv);

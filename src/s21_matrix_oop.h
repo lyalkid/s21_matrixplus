@@ -1,6 +1,7 @@
 #ifndef S21_MATRIX_OOP_H
 #define S21_MATRIX_OOP_H
 #include <math.h>
+enum status { OK, ERROR, CALC_ERROR };
 
 #include <iostream>
 class S21Matrix {
@@ -15,8 +16,8 @@ class S21Matrix {
   double getElement(int row, int col) const;
 
   // Сеттеры
-  void setRows(int rows);
-  void setCols(int cols);
+  void setRows(int new_rows);
+  void setCols(int new_cols);
   void setElement(int row, int col, double value);
 
   // Конструкторы
@@ -39,6 +40,9 @@ class S21Matrix {
   double Determinant();
   S21Matrix InverseMatrix();
 
+  //
+  int is_matrix_correct();
+
   // operators
   S21Matrix operator+(const S21Matrix& other);
   S21Matrix operator-(const S21Matrix& other);
@@ -52,11 +56,11 @@ class S21Matrix {
   S21Matrix& operator*=(const double num);
   double& operator()(int i, int j);
   const double& operator()(int i, int j) const;
-  double* operator[](int i) { return matrix_[i]; }
-  const double* operator[](int i) const { return matrix_[i]; }
+  double* operator[](int i);
+  const double* operator[](int i) const;
 
   void out_matrix();
-  S21Matrix get_minor(S21Matrix A, int i, int j);
+  S21Matrix get_minor(int i, int j, S21Matrix matr);
 };
 
 #endif  // S21_MATRIX_OOP_H
