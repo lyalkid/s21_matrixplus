@@ -51,6 +51,9 @@ class S21Matrix {
   S21Matrix& operator*=(const S21Matrix& other);
   S21Matrix& operator*=(const double num);
   double& operator()(int i, int j);
+  const double& operator()(int i, int j) const;
+  double* operator[](int i) { return matrix_[i]; }
+  const double* operator[](int i) const { return matrix_[i]; }
 
   void out_matrix();
   S21Matrix get_minor(S21Matrix A, int i, int j);

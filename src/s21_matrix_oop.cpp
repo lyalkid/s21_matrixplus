@@ -192,33 +192,40 @@ S21Matrix& S21Matrix::operator=(const S21Matrix& other) {
   }
   return *this;
 }
-S21Matrix &S21Matrix::operator+=(const S21Matrix &other) {
+S21Matrix& S21Matrix::operator+=(const S21Matrix& other) {
   SumMatrix(other);
   return *this;
 }
 
-S21Matrix &S21Matrix::operator-=(const S21Matrix &other) {
+S21Matrix& S21Matrix::operator-=(const S21Matrix& other) {
   SubMatrix(other);
   return *this;
 }
 
-S21Matrix &S21Matrix::operator*=(const S21Matrix &other) {
+S21Matrix& S21Matrix::operator*=(const S21Matrix& other) {
   MulMatrix(other);
   return *this;
 }
 
-S21Matrix &S21Matrix::operator*=(const double num) {
+S21Matrix& S21Matrix::operator*=(const double num) {
   MulNumber(num);
   return *this;
 }
 
-double &S21Matrix::operator()(int i, int j) {
-  if (i < 0 || j < 0 || i > rows_ || j > cols_)
+double& S21Matrix::operator()(int i, int j) {
+  if (i < 0 || j < 0 || i > rows_ || j > cols_) {
     throw std::out_of_range("Incorrect index");
+  }
 
   return matrix_[i][j];
 }
 
+const double& S21Matrix::operator()(int i, int j) const {
+  if (i < 0 || j < 0 || i > rows_ || j > cols_) {
+    throw std::out_of_range("Incorrect index");
+  }
+  return matrix_[i][j];
+}
 
 void S21Matrix::out_matrix() {
   for (int i = 0; i < rows_; i++) {

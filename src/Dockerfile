@@ -1,13 +1,32 @@
-# корневой image образ для сборки - чистый ubuntu
+# # корневой image образ для сборки - чистый ubuntu
+# FROM ubuntu
+
+# # обновляем apt пакеты и устанавливаем по очереди нужные зависимости
+# RUN apt-get update && apt-get install -y g++ make valgrind lcov clang-format vim libgtest-dev
+
+# COPY . /code
+
+# # Устанавливаем
+# WORKDIR /code
+
+# CMD /bin/bash
+
 FROM ubuntu
 
-# обновляем apt пакеты и устанавливаем по очереди нужные зависимости
-RUN apt-get update && apt-get install -y g++ make valgrind lcov clang-format vim libgtest-dev
+RUN apt-get update && apt-get install -y \
+    libpcre3 \
+    libpcre3-dev
+RUN apt-get install -y gcc
+RUN apt-get install -y valgrind
+RUN apt-get install -y make
+RUN apt-get install -y vim
+RUN apt-get install -y check
+RUN apt-get install -y clang-format
+RUN apt-get install -y lcov
+RUN apt-get install -y libgtest-dev
+RUN apt-get install -y git
+RUN apt-get install -y g++
 
-COPY . /code
 
-# Устанавливаем
-WORKDIR /code
 
-CMD /bin/bash
-
+COPY . /project

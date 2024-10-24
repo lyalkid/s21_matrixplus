@@ -58,7 +58,7 @@ TEST(test_setters, set_rows_up) {
   S21Matrix m(2, 2);
   m[1][1] = 6.9;
 
-  m.SetRows_(5);
+  m.setRows(5);
   EXPECT_EQ(m.getRows(), 5);
   EXPECT_EQ(m[1][1], 6.9);
 }
@@ -67,7 +67,7 @@ TEST(test_setters, set_rows_down) {
   S21Matrix m(2, 2);
   m[0][0] = 6.9;
 
-  m.SetRows_(1);
+  m.setRows(1);
   EXPECT_EQ(m.getRows(), 1);
   EXPECT_EQ(m[0][0], 6.9);
 }
@@ -75,14 +75,14 @@ TEST(test_setters, set_rows_down) {
 TEST(test_setters, set_rows_zero) {
   S21Matrix m;
 
-  EXPECT_ANY_THROW(m.SetRows_(0));
+  EXPECT_ANY_THROW(m.setRows(0));
 }
 
 TEST(test_setters, set_cols_up) {
   S21Matrix m(2, 2);
   m[1][1] = 6.9;
 
-  m.SetCols_(5);
+  m.setCols(5);
   EXPECT_EQ(m.getCols(), 5);
   EXPECT_EQ(m[1][1], 6.9);
 }
@@ -91,7 +91,7 @@ TEST(test_setters, set_cols_down) {
   S21Matrix m(2, 2);
   m[0][0] = 6.9;
 
-  m.SetCols_(1);
+  m.setCols(1);
   EXPECT_EQ(m.getCols(), 1);
   EXPECT_EQ(m[0][0], 6.9);
 }
@@ -99,7 +99,7 @@ TEST(test_setters, set_cols_down) {
 TEST(test_setters, set_cols_zero) {
   S21Matrix m;
 
-  EXPECT_ANY_THROW(m.SetCols_(0));
+  EXPECT_ANY_THROW(m.setCols(0));
 }
 
 TEST(test_overload, equal_lvalue) {

@@ -1,12 +1,12 @@
 TARGET = s21_matrix_oop.a
-CFLAGS = -Wall -Werror -Wextra -std=c++17 -lm -lstdc++
-TEST_FLAGS = -lgtest -pthread
+CFLAGS = -Wall -Werror -Wextra -std=c++17 -lm -lstdc++ 
+TEST_FLAGS = -O0 -I googletest/googletest/include  -pthread #-lgtest
 
 all: style cc test gcov_report 
 
 $(TARGET): 
 	mkdir obj/
-	gcc $(CFLAGS) -c *.cpp 
+	g++ $(CFLAGS) -c *.cpp 
 	ar rc $(TARGET)  *.o 
 	ranlib $(TARGET)  
 	mv *.o obj/
@@ -20,7 +20,7 @@ cc:
 	gcc $(CFLAGS) *.cpp -o matrix_cpp
 
 test: clean $(TARGET)
-	gcc $(CFLAGS) $(TEST_FLAGS) $(TARGET) tests/test.cpp -o matrix_test && ./matrix_test
+	g++ $(CFLAGS) $(TEST_FLAGS) $(TARGET) tests/test.cpp -o matrix_test && ./matrix_test
 	
 clean:
 	rm -rf matrix_cpp matrix_test $(TARGET) *.a obj/ *.out
