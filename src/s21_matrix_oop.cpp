@@ -293,15 +293,15 @@ const double& S21Matrix::operator()(int i, int j) const {
 double* S21Matrix::operator[](int i) { return matrix_[i]; }
 const double* S21Matrix::operator[](int i) const { return matrix_[i]; }
 
-void S21Matrix::out_matrix() {
-  for (int i = 0; i < rows_; i++) {
-    for (int j = 0; j < cols_; j++) {
-      printf("%lf ", matrix_[i][j]);
-    }
-    printf("\n");
-  }
-  printf("\n");
-}
+// void S21Matrix::out_matrix() {
+//   for (int i = 0; i < rows_; i++) {
+//     for (int j = 0; j < cols_; j++) {
+//       printf("%lf ", matrix_[i][j]);
+//     }
+//     printf("\n");
+//   }
+//   printf("\n");
+// }
 
 // S21Matrix S21Matrix::CalcComplements() {
 //   if (rows_ != cols_) {
@@ -450,11 +450,3 @@ S21Matrix S21Matrix::get_minor(int i, int j, S21Matrix matr) {
   }
   return b;
 };
-
-// int main() {
-//   S21Matrix m(2, 3);
-//   m.InverseMatrix();
-
-//   S21Matrix n(2, 2);
-//   n.InverseMatrix();
-// }

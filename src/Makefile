@@ -1,49 +1,54 @@
 TARGET = s21_matrix_oop.a
-CFLAGS = -Wall -Werror -Wextra -std=c++17 -lm -lstdc++ 
+CFLAGS = -Wall -Werror -Wextra -std=c++17 -pedantic -lm -lstdc++
 TEST_FLAGS = -pthread -lgtest 
 SOURCE = $(wildcard *.cpp)
 TESTS_SOURCE = $(wildcard tests/*.cpp)
-all: style cc test gcov_report 
+CC = g++
+UNAME_S = $(bash uname -s)
 
+all: style test gcov_report 
 
-
-ifeq ($(UNAME_S),Linux)
+ifeq ($(bash uname -s),Linux)
+	CC = g++
   	OPEN_CMD = firefox
-	ADD_LIB = -lcheck -lsubunit -lm -lrt -lpthread -D_GNU_SOURCE
+	TEST_FLAGS = -I/usr/local/include -L/usr/local/lib -lgtest -lgtest_main -pthread #-lsubunit
 endif
-ifeq ($(UNAME_S),Darwin)
+ifeq ($(shell uname -s),Darwin)
 	OPEN_CMD = open
-	ADD_LIB =
+	TEST_FLAGS = -pthread -lgtest -lm -lstdc++
 endif
 
-$(TARGET): style
-	mkdir obj/
-	gcc $(CFLAGS) -c *.cpp 
+$(TARGET): 
+	$(CC) $(CFLAGS) -c *.cpp 
 	ar rc $(TARGET)  *.o 
 	ranlib $(TARGET)  
-	mv *.o obj/
+
 
 style_test:
 	clang-format --style=Google -n *.cpp  tests/*.cpp *.h
 style:
 	clang-format --style=Google -i *.cpp  tests/*.cpp *.h
 
-cc:
-	gcc $(CFLAGS) *.cpp -o matrix_cpp
 
 test: clean $(TARGET)
-	gcc $(CFLAGS) $(TEST_FLAGS) $(TARGET) tests/test.cpp -o matrix_test && ./matrix_test
+	$(CC) $(CFLAGS)  tests/test.cpp  $(TARGET) $(TEST_FLAGS) -o matrix_test && ./matrix_test 
 	
 failed_test: clean $(TARGET)
-	gcc $(CFLAGS) $(TEST_FLAGS) $(TARGET) tests/test.cpp -o matrix_test && ./matrix_test | grep "FAILED"
+	$(CC) $(CFLAGS)  tests/test.cpp  $(TARGET) $(TEST_FLAGS) -o matrix_test && ./matrix_test | grep "FAILED"
 
 clean:
 	rm -rf matrix_cpp matrix_test $(TARGET) *.a obj/ *.out  *.o gcovr  *.dSYM 
 
+valg: clean test
+	valgrind --tool=memcheck --leak-check=yes --track-origins=yes --leak-check=full --show-leak-kinds=all -s ./matrix_test
+
+valgrind: clean test
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=leaks_log.txt ./matrix_test
+	echo --- Valgrind summary --- && cat leaks_log.txt | grep 'total heap usage' && cat leaks_log.txt | grep 'ERROR SUMMARY'
 
 gcov_report: clean 
 	mkdir gcovr
-	gcc --coverage $(CFLAGS) $(TEST_FLAGS) $(SOURCE) tests/test.cpp -o ./gcovr/gtest_test
+	$(CC) --coverage $(CFLAGS) $(TEST_FLAGS) $(SOURCE) tests/test.cpp -o ./gcovr/gtest_test
 	chmod +x ./gcovr/gtest_test
 	./gcovr/gtest_test
 	lcov --capture --branch-coverage --directory . --output-file ./gcovr/coverage.info --no-external --ignore-errors inconsistent,inconsistent
