@@ -86,9 +86,17 @@ void S21Matrix::setElement(int row, int col, double value) {
 S21Matrix::S21Matrix() {
   rows_ = 3;
   cols_ = 3;
-  matrix_ = new double*[rows_];
-  for (int i = 0; i < rows_; i++) {
-    matrix_[i] = new double[cols_]{};
+  try {
+    matrix_ = new double*[rows_];
+    for (int i = 0; i < rows_; i++) {
+      matrix_[i] = new double[cols_]{};
+    }
+  } catch (const std::bad_alloc& e) {
+    for (int i = 0; i < rows_; ++i) {
+      delete[] matrix_[i];
+    }
+    delete[] matrix_;
+    throw;
   }
 }
 
@@ -96,9 +104,17 @@ S21Matrix::S21Matrix(int rows, int cols) {
   if (rows > 0 && cols > 0) {
     rows_ = rows;
     cols_ = cols;
-    matrix_ = new double*[rows_];
-    for (int i = 0; i < rows_; i++) {
-      matrix_[i] = new double[cols_]{};
+    try {
+      matrix_ = new double*[rows_];
+      for (int i = 0; i < rows_; i++) {
+        matrix_[i] = new double[cols_]{};
+      }
+    } catch (const std::bad_alloc& e) {
+      for (int i = 0; i < rows_; ++i) {
+        delete[] matrix_[i];
+      }
+      delete[] matrix_;
+      throw;
     }
   } else {
     throw std::out_of_range("Rows and Columns must be grater than zero");
@@ -107,8 +123,18 @@ S21Matrix::S21Matrix(int rows, int cols) {
 
 S21Matrix::S21Matrix(const S21Matrix& other)
     : rows_(other.getRows()), cols_(other.getCols()) {
-  matrix_ = new double*[rows_]();
-  for (int i = 0; i < rows_; i++) matrix_[i] = new double[cols_]();
+  try {
+    matrix_ = new double*[rows_];
+    for (int i = 0; i < rows_; i++) {
+      matrix_[i] = new double[cols_]{};
+    }
+  } catch (const std::bad_alloc& e) {
+    for (int i = 0; i < rows_; ++i) {
+      delete[] matrix_[i];
+    }
+    delete[] matrix_;
+    throw;
+  }
   for (int i = 0; i < rows_; i++) {
     for (int j = 0; j < cols_; j++) {
       matrix_[i][j] = other.matrix_[i][j];
@@ -126,7 +152,7 @@ S21Matrix::S21Matrix(S21Matrix&& other)
 S21Matrix::~S21Matrix() {
   if (matrix_ != nullptr) {
     for (int i = 0; i < rows_; i++) {
-      delete[] matrix_[i];
+      if (matrix_[i] != nullptr) delete[] matrix_[i];
     }
     delete[] matrix_;
   }
